@@ -17,9 +17,8 @@ install:
   - conda update conda
   - conda info -a
   - conda install -c https://conda.binstar.org/dfroger hdf5_cxx minimal-traceback
-  - conda create -n test-environment python=2.7 
   - cd src
-  - ../waf configure --local-dir=$HOME/miniconda/envs/test-environment --prefix=$PWD/../install
+  - ../waf configure --local-dir=$HOME/miniconda --prefix=$PWD/../install
   - ../waf build
   - ../waf install
 
