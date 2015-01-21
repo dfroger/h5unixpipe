@@ -1,0 +1,27 @@
+os:
+  - linux
+
+language: cpp
+
+compiler:
+  - gcc
+
+install:
+  - sudo apt-get update
+  - sudo apt-get install swig
+  - wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update conda
+  - conda info -a
+  - conda install hdf5_cxx minimal-traceback
+  - conda create -n test-environment python=2.7 
+  - cd src
+  - ../waf configure --local-dir=$HOME/miniconda/envs/test-environment --prefix=$PWD/../install
+  - ../waf build
+  - ../waf install
+
+script:
+  - find install

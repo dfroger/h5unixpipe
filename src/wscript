@@ -11,6 +11,9 @@ def options(opt):
     opt.load('compiler_c')
     opt.load('compiler_cxx')
 
+    opt.add_option('--local-dir', action='store', default='',
+        help='Search C/C++ headers in local-dir/include, and libraries in local-dir/lib')
+
     opt.add_option('--hdf5-inc-dir', action='store', default='',
         help='HDF5 include directory.')
 
@@ -29,6 +32,12 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_c')
     conf.load('compiler_cxx')
+
+    if conf.options.local_dir:
+        local_dir = expanduser(conf.options.local_dir)
+        conf.env.prepend_value('INCLUDES', join(local_dir,'include'))
+        conf.env.prepend_value('LIBPATH', join(local_dir, 'lib'))
+        conf.env.prepend_value('RPATH', join(local_dir, 'lib'))
 
     if conf.options.hdf5_inc_dir:
         hdf5_inc_dir = expanduser(conf.options.hdf5_inc_dir)
@@ -79,17 +88,12 @@ def build(bld):
         lib = 'minimal_traceback',
     )
 
-    #bld(
-        #features = 'cxx cxxshlib',
-        #source = 'h5unixpipe_cxx.cxx',
-        #target = 'h5unixpipe_cxx',
-        #includes = '.',
-        #export_includes = '.',
-        #vnum = VERSION,
-        #name = 'h5unixpipe_cxx',
+    bld.shlib(
+        source = 'h5unixpipe_cxx.cxx',
+        target = 'h5unixpipe_cxx',
         #cxxflags = ['-g','-O0'],
         ##cxxflags = ['-O3','-DNDEBUG'],
-    #)
+    )
 
     bld.install_files('${PREFIX}/include', 
        ['h5unixpipe.h',])
