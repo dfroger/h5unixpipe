@@ -16,7 +16,7 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update conda
   - conda info -a
-  - conda install hdf5_cxx minimal-traceback
+  - conda install -c https://conda.binstar.org/dfroger hdf5_cx xhdf5_cxx minimal-traceback
   - conda create -n test-environment python=2.7 
   - cd src
   - ../waf configure --local-dir=$HOME/miniconda/envs/test-environment --prefix=$PWD/../install
