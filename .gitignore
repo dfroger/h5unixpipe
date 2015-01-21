@@ -1,0 +1,16 @@
+*~
+.*.swp
+
+*.hdf5
+*.h5
+
+# waf build
+src/build/
+example/build/
+.lock-waf*
+.waf*
+*.swo
+
+# local dev
+configure.sh
+install/

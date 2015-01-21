@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+from os.path import expanduser
+
+def options(opt):
+    opt.load('compiler_c')
+    opt.load('python')
+
+    opt.add_option('--hdf5-inc-dir', action='store', default='',
+        help='HDF5 headers directory.')
+
+    opt.add_option('--hdf5-lib-dir', action='store', default='',
+        help='HDF5 library directory.')
+
+    opt.add_option('--h5unixpipe-inc-dir', action='store', default='',
+        help='h5unixpipe headers directory.')
+
+    opt.add_option('--h5unixpipe-lib-dir', action='store', default='',
+        help='h5unixpipe library directory.')
+
+    opt.add_option('--mtb-inc-dir', action='store', default='',
+        help='minimal-traceback include directory.')
+
+    opt.add_option('--mtb-lib-dir', action='store', default='',
+        help='minimal-traceback libraries directory.')
+
+def configure(conf):
+    conf.load('compiler_c')
+
+    hdf5_inc_dir = expanduser(conf.options.hdf5_inc_dir)
+    hdf5_lib_dir = expanduser(conf.options.hdf5_lib_dir)
+
+    h5unixpipe_inc_dir = expanduser(conf.options.h5unixpipe_inc_dir)
+    h5unixpipe_lib_dir = expanduser(conf.options.h5unixpipe_lib_dir)
+
+    mtb_inc_dir = expanduser(conf.options.mtb_inc_dir)
+    mtb_lib_dir = expanduser(conf.options.mtb_lib_dir)
+
+    conf.env.prepend_value('INCLUDES',
+        [hdf5_inc_dir, h5unixpipe_inc_dir, mtb_inc_dir])
+
+    conf.env.prepend_value('LIBPATH',
+        [hdf5_lib_dir,h5unixpipe_lib_dir, mtb_lib_dir])
+
+    conf.env.prepend_value('RPATH',
+        [hdf5_lib_dir, h5unixpipe_lib_dir, mtb_lib_dir])
+
+    conf.check(header_name='hdf5.h', features='c cprogram')
+    conf.check(header_name='h5unixpipe.h', features='c cprogram')
+    conf.check_cc(lib='h5unixpipe hdf5_hl hdf5')
+
+def build(bld):
+
+    bld.program(
+        source = 'stdin_stdout.c',
+        target = 'stdin_stdout',
+        lib  = ['h5unixpipe','hdf5_hl','hdf5','minimal_traceback'],
+        cxxflags = ['-g','-O0'],
+    )
+
+    bld.program(
+        source = 'simplewrite.c',
+        target = 'simplewrite',
+        lib  = ['h5unixpipe','hdf5_hl','hdf5','minimal_traceback'],
+        cxxflags = ['-g','-O0'],
+    )
+
