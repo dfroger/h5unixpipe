@@ -7,8 +7,6 @@ compiler:
   - gcc
 
 install:
-  - sudo apt-get update
-  - sudo apt-get install swig
   - wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -17,10 +15,15 @@ install:
   - conda update conda
   - conda info -a
   - conda install -c https://conda.binstar.org/dfroger hdf5_cxx minimal-traceback
-  - cd src
-  - ../waf configure --local-dir=$HOME/miniconda --prefix=$PWD/../install
+  - cd $TRAVIS_BUILD_DIR/src
+  - ../waf configure --local-dir=$HOME/miniconda --prefix=$HOME/miniconda
   - ../waf build
   - ../waf install
 
 script:
-  - find install
+  - cd $TRAVIS_BUILD_DIR/example
+  - ../waf configure --local-dir=$HOME/miniconda
+  - ../waf build
+  - ./build/simplewrite 3 4
+  - cat simplewrite_3_4.h5 | ./build/stdin_stdout > out.h5
+  - h5dump out.h5

@@ -1,52 +1,59 @@
 #!/usr/bin/env python
-from os.path import expanduser
+from os.path import expanduser, join
+
+EXTERNAL = ['hdf5', 'h5unixpipe', 'mtb']
 
 def options(opt):
     opt.load('compiler_c')
     opt.load('python')
 
-    opt.add_option('--hdf5-inc-dir', action='store', default='',
-        help='HDF5 headers directory.')
+    opt.add_option('--local-dir', action='store', default='',
+        help='Search C/C++ headers in local-dir/include, ' \
+             'and libraries in local-dir/lib')
 
-    opt.add_option('--hdf5-lib-dir', action='store', default='',
-        help='HDF5 library directory.')
+    for name in EXTERNAL:
+        opt.add_option('--%s-dir' % name,
+            action='store', default='',
+            help='%s directory.' % name)
 
-    opt.add_option('--h5unixpipe-inc-dir', action='store', default='',
-        help='h5unixpipe headers directory.')
+        opt.add_option('--%s-inc-dir' % name,
+            action='store', default='',
+            help='%s headers directory.' % name)
 
-    opt.add_option('--h5unixpipe-lib-dir', action='store', default='',
-        help='h5unixpipe library directory.')
-
-    opt.add_option('--mtb-inc-dir', action='store', default='',
-        help='minimal-traceback include directory.')
-
-    opt.add_option('--mtb-lib-dir', action='store', default='',
-        help='minimal-traceback libraries directory.')
+        opt.add_option('--%s-lib-dir' % name,
+            action='store', default='',
+            help='%s library directory.' % name)
 
 def configure(conf):
     conf.load('compiler_c')
 
-    hdf5_inc_dir = expanduser(conf.options.hdf5_inc_dir)
-    hdf5_lib_dir = expanduser(conf.options.hdf5_lib_dir)
+    if conf.options.local_dir:
+        local_dir = expanduser(conf.options.local_dir)
+        conf.env.prepend_value('INCLUDES', join(local_dir,'include'))
+        conf.env.prepend_value('LIBPATH', join(local_dir, 'lib'))
+        conf.env.prepend_value('RPATH', join(local_dir, 'lib'))
 
-    h5unixpipe_inc_dir = expanduser(conf.options.h5unixpipe_inc_dir)
-    h5unixpipe_lib_dir = expanduser(conf.options.h5unixpipe_lib_dir)
+    for name in EXTERNAL:
+        inc_dir = getattr(conf.options, '%s_inc_dir' % name)
+        if inc_dir:
+            conf.env['INCLUDES_%s' % name.upper()] = expanduser(inc_dir)
 
-    mtb_inc_dir = expanduser(conf.options.mtb_inc_dir)
-    mtb_lib_dir = expanduser(conf.options.mtb_lib_dir)
+        lib_dir = getattr(conf.options, '%s_inc_dir' % name)
+        if lib_dir:
+            conf.env['LIBPATH_%s' % name.upper()] = expanduser(lib_dir)
+            conf.env['RPATH_%s' % name.upper()] = expanduser(lib_dir)
 
-    conf.env.prepend_value('INCLUDES',
-        [hdf5_inc_dir, h5unixpipe_inc_dir, mtb_inc_dir])
+        root_dir = getattr(conf.options, '%s_dir' % name)
+        if root_dir:
+            root_dir = expanduser(root_dir)
+            conf.env['INCLUDES_%s' % name.upper()] = join(root_dir, 'include')
+            conf.env['LIBPATH_%s' % name.upper()] = join(root_dir, 'lib')
+            conf.env['RPATH_%s' % name.upper()] = join(root_dir, 'lib')
 
-    conf.env.prepend_value('LIBPATH',
-        [hdf5_lib_dir,h5unixpipe_lib_dir, mtb_lib_dir])
-
-    conf.env.prepend_value('RPATH',
-        [hdf5_lib_dir, h5unixpipe_lib_dir, mtb_lib_dir])
-
-    conf.check(header_name='hdf5.h', features='c cprogram')
-    conf.check(header_name='h5unixpipe.h', features='c cprogram')
-    conf.check_cc(lib='h5unixpipe hdf5_hl hdf5')
+    conf.check(header_name='hdf5.h', features='c cprogram', use='HDF5')
+    conf.check(header_name='h5unixpipe.h', features='c cprogram', 
+               use='H5UNIXPIPE HDF5')
+    conf.check_cc(lib='h5unixpipe hdf5_hl hdf5', use='H5UNIXPIPE HDF5')
 
 def build(bld):
 
@@ -55,6 +62,7 @@ def build(bld):
         target = 'stdin_stdout',
         lib  = ['h5unixpipe','hdf5_hl','hdf5','minimal_traceback'],
         cxxflags = ['-g','-O0'],
+        use = 'H5UNIXPIPE HDF5',
     )
 
     bld.program(
@@ -62,5 +70,6 @@ def build(bld):
         target = 'simplewrite',
         lib  = ['h5unixpipe','hdf5_hl','hdf5','minimal_traceback'],
         cxxflags = ['-g','-O0'],
+        use = 'H5UNIXPIPE HDF5',
     )
 
