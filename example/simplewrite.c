@@ -46,4 +46,6 @@ main(int argc, char** argv)
 
     // Inform user of the created file.
     printf("%s\n",filename);
+
+    return 0;
 }

@@ -6,7 +6,7 @@ language: cpp
 compiler:
   - gcc
 
-install:
+before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -15,6 +15,8 @@ install:
   - conda update conda
   - conda info -a
   - conda install -c https://conda.binstar.org/dfroger hdf5_cxx minimal-traceback
+
+install:
   - cd $TRAVIS_BUILD_DIR/src
   - ../waf configure --local-dir=$HOME/miniconda --prefix=$HOME/miniconda
   - ../waf build

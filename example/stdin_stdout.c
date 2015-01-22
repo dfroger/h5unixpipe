@@ -72,4 +72,6 @@ main() {
     H5Fclose(fileimage_out);
 
     free(data);
+
+    return 0;
 }
