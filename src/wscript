@@ -85,12 +85,13 @@ def build(bld):
     bld.shlib(
         source = ['h5unixpipe.c'],
         target = 'h5unixpipe',
-        lib = 'minimal_traceback',
+        lib = 'minimal_traceback hdf5_hl hdf5',
     )
 
     bld.shlib(
         source = 'h5unixpipe_cxx.cxx',
         target = 'h5unixpipe_cxx',
+        lib = 'hdf5_cpp hdf5_hl hdf5'
         #cxxflags = ['-g','-O0'],
         ##cxxflags = ['-O3','-DNDEBUG'],
     )

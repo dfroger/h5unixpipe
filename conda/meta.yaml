@@ -12,11 +12,22 @@ requirements:
     - minimal-traceback
 
 source:
-  git_url: https://github.com/dfroger/h5unixpipe
+  path: ..
+  #git_url: https://github.com/dfroger/h5unixpipe
 
 build:
   number: 0
   binary_relocation: true
+
+test:
+  commands:
+    - cp -r $RECIPE_DIR/../example/* .
+    - $RECIPE_DIR/../waf configure --local-dir=$PREFIX
+    - $RECIPE_DIR/../waf build
+    - ./build/simplewrite 3 4
+    - cat simplewrite_3_4.h5 | ./build/stdin_stdout > out.h5
+    - h5dump out.h5 > out.h5.dump
+    - diff out.h5.dump out.h5.dump.ref
 
 about:
   home: https://github.com/dfroger/h5unixpipe
