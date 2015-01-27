@@ -16,7 +16,7 @@ source:
   #git_url: https://github.com/dfroger/h5unixpipe
 
 build:
-  number: 1
+  number: 2
   binary_relocation: true
 
 test:
