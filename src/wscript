@@ -96,7 +96,7 @@ def build(bld):
     )
 
     bld.install_files('${PREFIX}/include', 
-       ['h5unixpipe.h',])
+       ['h5unixpipe.h','h5unixpipe_cxx.hxx'])
 
     if bld.env.PYTHON_BINDINGS:
         bld(
