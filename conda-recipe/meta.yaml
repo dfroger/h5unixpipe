@@ -4,10 +4,12 @@ package:
 
 requirements:
   build:
+    - gcc ==4.8.5
     - python
     - hdf5_cxx
     - minimal-traceback
   run:
+    - libgcc
     - hdf5_cxx
     - minimal-traceback
 
@@ -16,7 +18,7 @@ source:
   url: https://github.com/heimdali/h5unixpipe/archive/0.0.1.tar.gz
 
 build:
-  number: 3
+  number: 4
   binary_relocation: true
 
 test:
